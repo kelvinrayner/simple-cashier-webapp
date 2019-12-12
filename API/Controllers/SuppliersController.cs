@@ -7,7 +7,7 @@ using System.Web.Http;
 using Data.Model;
 using Data.Repository;
 using Data.Repository.Interface;
-
+using Data.ViewModel;
 
 namespace API.Controllers
 {
@@ -30,16 +30,15 @@ namespace API.Controllers
         }
 
         // POST: api/Suppliers
-        public void Post([FromBody]string value)
+        public void Post(SupplierVM supplierVM)
         {
-            
-
+            supplierRepository.Create(supplierVM);
         }
 
         // PUT: api/Suppliers/5
-        public void Put(int id, [FromBody]string value)
+        public void Put(int id, SupplierVM supplierVM)
         {
-
+            supplierRepository.Update(id, supplierVM);
         }
 
         // DELETE: api/Suppliers/5
