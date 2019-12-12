@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="Bootcamp32Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="TB_M_Item">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar(max)" />
+          <Property Name="Stock" Type="int" Nullable="false" />
+          <Property Name="Price" Type="int" Nullable="false" />
+          <Property Name="Supplier_Id" Type="int" />
+        </EntityType>
+        <EntityType Name="TB_M_Supplier">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar(max)" />
+          <Property Name="Email" Type="nvarchar(max)" />
+          <Property Name="CreateDate" Type="datetimeoffset" Precision="7" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_dbo_TB_M_Item_dbo_TB_M_Supplier_Supplier_Id">
+          <End Role="TB_M_Supplier" Type="Self.TB_M_Supplier" Multiplicity="0..1" />
+          <End Role="TB_M_Item" Type="Self.TB_M_Item" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TB_M_Supplier">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TB_M_Item">
+              <PropertyRef Name="Supplier_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Bootcamp32ModelStoreContainer">
+          <EntitySet Name="TB_M_Item" EntityType="Self.TB_M_Item" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TB_M_Supplier" EntityType="Self.TB_M_Supplier" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_dbo_TB_M_Item_dbo_TB_M_Supplier_Supplier_Id" Association="Self.FK_dbo_TB_M_Item_dbo_TB_M_Supplier_Supplier_Id">
+            <End Role="TB_M_Supplier" EntitySet="TB_M_Supplier" />
+            <End Role="TB_M_Item" EntitySet="TB_M_Item" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="Bootcamp32Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="TB_M_Item">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Stock" Type="Int32" Nullable="false" />
+          <Property Name="Price" Type="Int32" Nullable="false" />
+          <Property Name="Supplier_Id" Type="Int32" />
+          <NavigationProperty Name="TB_M_Supplier" Relationship="Self.FK_dbo_TB_M_Item_dbo_TB_M_Supplier_Supplier_Id" FromRole="TB_M_Item" ToRole="TB_M_Supplier" />
+        </EntityType>
+        <EntityType Name="TB_M_Supplier">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreateDate" Type="DateTimeOffset" Nullable="false" Precision="7" />
+          <NavigationProperty Name="TB_M_Item" Relationship="Self.FK_dbo_TB_M_Item_dbo_TB_M_Supplier_Supplier_Id" FromRole="TB_M_Supplier" ToRole="TB_M_Item" />
+        </EntityType>
+        <Association Name="FK_dbo_TB_M_Item_dbo_TB_M_Supplier_Supplier_Id">
+          <End Role="TB_M_Supplier" Type="Self.TB_M_Supplier" Multiplicity="0..1" />
+          <End Role="TB_M_Item" Type="Self.TB_M_Item" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TB_M_Supplier">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TB_M_Item">
+              <PropertyRef Name="Supplier_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Bootcamp32Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="TB_M_Item" EntityType="Self.TB_M_Item" />
+          <EntitySet Name="TB_M_Supplier" EntityType="Self.TB_M_Supplier" />
+          <AssociationSet Name="FK_dbo_TB_M_Item_dbo_TB_M_Supplier_Supplier_Id" Association="Self.FK_dbo_TB_M_Item_dbo_TB_M_Supplier_Supplier_Id">
+            <End Role="TB_M_Supplier" EntitySet="TB_M_Supplier" />
+            <End Role="TB_M_Item" EntitySet="TB_M_Item" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="Bootcamp32ModelStoreContainer" CdmEntityContainer="Bootcamp32Entities">
+          <EntitySetMapping Name="TB_M_Item">
+            <EntityTypeMapping TypeName="Bootcamp32Model.TB_M_Item">
+              <MappingFragment StoreEntitySet="TB_M_Item">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Stock" ColumnName="Stock" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Supplier_Id" ColumnName="Supplier_Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TB_M_Supplier">
+            <EntityTypeMapping TypeName="Bootcamp32Model.TB_M_Supplier">
+              <MappingFragment StoreEntitySet="TB_M_Supplier">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
