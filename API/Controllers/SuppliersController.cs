@@ -4,6 +4,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using API.Services;
+using API.Services.Interface;
 using Data.Model;
 using Data.Repository;
 using Data.Repository.Interface;
@@ -14,7 +16,8 @@ namespace API.Controllers
     public class SuppliersController : ApiController
     {
         ISupplierRepository supplierRepository = new SupplierRepository();
-        
+        ISupplierService supplierService = new SupplierService();
+
         // GET: api/Suppliers
         public IEnumerable<Supplier> Get()
         {
@@ -32,13 +35,13 @@ namespace API.Controllers
         // POST: api/Suppliers
         public void Post(SupplierVM supplierVM)
         {
-            supplierRepository.Create(supplierVM);
+            supplierService.Create(supplierVM);
         }
 
         // PUT: api/Suppliers/5
         public void Put(int id, SupplierVM supplierVM)
         {
-            supplierRepository.Update(id, supplierVM);
+            supplierService.Update(id, supplierVM);
         }
 
         // DELETE: api/Suppliers/5

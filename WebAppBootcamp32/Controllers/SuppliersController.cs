@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using WebAppBootcamp32.Models;
@@ -119,13 +121,20 @@ namespace WebAppBootcamp32.Controllers
             }
         }
 
-        public JsonResult supplierJsonList()
+        public async Task<JsonResult> supplierJsonList()
         {
-            var data = myEntities.TB_M_Supplier.ToList();
-            var json = JsonConvert.SerializeObject(data, Formatting.None, new JsonSerializerSettings()
+            string url = "http://localhost:2414/API/Suppliers";
+            var client = new HttpClient();
+            HttpResponseMessage responseMessage = await client.GetAsync(url).ConfigureAwait(false);
+            if (responseMessage.IsSuccessStatusCode)
             {
-                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-            });
+                var data = await responseMessage.Content.ReadAsAsync<List<TB_M_Supplier>>();
+                var json = JsonConvert.SerializeObject(data, Formatting.None, new JsonSerializerSettings()
+                {
+                    ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                });
+                return Json(json, JsonRequestBehavior.AllowGet);
+            }
             //var get = from s in myEntities.TB_M_Supplier
             //          select new { s.Name, s.Email, s.CreateDate };
             //var json = JsonConvert.SerializeObject(get, new JsonSerializerSettings
@@ -133,7 +142,7 @@ namespace WebAppBootcamp32.Controllers
             //    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
             //    Formatting = Formatting.Indented
             //});
-            return Json(json, JsonRequestBehavior.AllowGet);
+            return Json("Error", JsonRequestBehavior.AllowGet);
         }
     }
 }
