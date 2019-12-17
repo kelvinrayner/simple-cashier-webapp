@@ -35,7 +35,7 @@ namespace Data.Repository
 
         public IEnumerable<Supplier> Get()
         {
-            return myContext.Suppliers.ToList();
+            return myContext.Suppliers.Where(s => s.IsDeleted == false).ToList();
         }
 
         public Supplier Get(int id)

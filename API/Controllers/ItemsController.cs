@@ -1,36 +1,28 @@
-﻿using System;
+﻿using API.Services.Interface;
+using Data.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using System.Web.Mvc;
-using API.Services;
-using API.Services.Interface;
-using Data.Model;
-using Data.Repository;
-using Data.Repository.Interface;
-using Data.ViewModel;
 
 namespace API.Controllers
 {
-    public class SuppliersController : ApiController
+    public class ItemsController : ApiController
     {
-        //ISupplierRepository supplierRepository = new SupplierRepository();
-        //ISupplierService supplierService = new SupplierService();
+        private IItemService _itemService;
 
-        private ISupplierService _supplierService;
-
-        public SuppliersController(ISupplierService supplierService)
+        public ItemsController(IItemService itemService)
         {
-            _supplierService = supplierService;
+            _itemService = itemService;
         }
 
-        [System.Web.Mvc.HttpGet]
-        // GET: api/Suppliers
+        [HttpGet]
+        // GET: api/Items
         public HttpResponseMessage Get()
         {
-            var data = _supplierService.Get();
+            var data = _itemService.Get();
             if (data == null)
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
@@ -38,11 +30,11 @@ namespace API.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, data);
         }
 
-        [System.Web.Mvc.HttpGet]
-        // GET: api/Suppliers/5
+        [HttpGet]
+        // GET: api/Items/5
         public HttpResponseMessage Get(int id)
         {
-            var data = _supplierService.Get(id);
+            var data = _itemService.Get(id);
             if (data == null)
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
@@ -50,11 +42,11 @@ namespace API.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, data);
         }
 
-        [System.Web.Mvc.HttpPost]
-        // POST: api/Suppliers
-        public HttpResponseMessage Post(SupplierVM supplierVM)
+        [HttpPost]
+        // POST: api/Items
+        public HttpResponseMessage Post(ItemVM itemVM)
         {
-            var inserted = _supplierService.Create(supplierVM);
+            var inserted = _itemService.Create(itemVM);
             if (inserted > 0)
             {
                 new HttpResponseMessage(HttpStatusCode.BadRequest);
@@ -62,11 +54,11 @@ namespace API.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, inserted);
         }
 
-        [System.Web.Mvc.HttpPut]
-        // PUT: api/Suppliers/5
-        public HttpResponseMessage Put(int id, SupplierVM supplierVM)
+        [HttpPut]
+        // PUT: api/Items/5
+        public HttpResponseMessage Put(int id, ItemVM itemVM)
         {
-            var updated = _supplierService.Update(id, supplierVM);
+            var updated = _itemService.Update(id, itemVM);
             if (updated > 0)
             {
                 new HttpResponseMessage(HttpStatusCode.BadRequest);
@@ -74,11 +66,11 @@ namespace API.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, updated);
         }
 
-        [System.Web.Mvc.HttpDelete]
-        // DELETE: api/Suppliers/5
+        [HttpDelete]
+        // DELETE: api/Items/5
         public HttpResponseMessage Delete(int id)
         {
-            var deleted = _supplierService.Delete(id);
+            var deleted = _itemService.Delete(id);
             if (deleted > 0)
             {
                 new HttpResponseMessage(HttpStatusCode.BadRequest);

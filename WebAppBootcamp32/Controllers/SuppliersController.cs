@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -37,24 +38,15 @@ namespace WebAppBootcamp32.Controllers
 
         // POST: Suppliers/Create
         [HttpPost]
-        public ActionResult Create(AddSupplierVM addSupplierVM)
+        public JsonResult Create(AddSupplierVM addSupplierVM)
         {
-            try
-            {
-                TB_M_Supplier supplier = new TB_M_Supplier();
-                supplier.Name = addSupplierVM.Name;
-                supplier.Email = addSupplierVM.Email;
-                supplier.CreateDate = DateTime.Now;
-
-                myEntities.TB_M_Supplier.Add(supplier);
-                myEntities.SaveChanges();
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            var client = new HttpClient();
+            var myContent = JsonConvert.SerializeObject(addSupplierVM);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(myContent);
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var result = client.PostAsync("http://localhost:2414/API/Suppliers", byteContent).Result;
+            return Json(result);
         }
 
         // GET: Suppliers/Edit/5
@@ -66,59 +58,23 @@ namespace WebAppBootcamp32.Controllers
         }
 
         // POST: Suppliers/Edit/5
-        [HttpPost]
-        public ActionResult EditSupplier(int id, AddSupplierVM addSupplierVM)
+        public JsonResult UpdateSupplier(AddSupplierVM addSupplierVM)
         {
-            try
-            {
-                var supplier = myEntities.TB_M_Supplier.Find(id);
-                supplier.Name = addSupplierVM.Name;
-                supplier.Email = addSupplierVM.Email;
-                supplier.CreateDate = DateTime.Now;
-                
-                myEntities.SaveChanges();
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            var client = new HttpClient();
+            var myContent = JsonConvert.SerializeObject(addSupplierVM);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(myContent);
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var result = client.PutAsync("http://localhost:2414/API/Suppliers/" + addSupplierVM.Id, byteContent).Result;
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
-
-        // GET: Suppliers/Delete/5
-        public ActionResult Delete(int id)
-        {
-            try
-            {
-                var supplier = myEntities.TB_M_Supplier.Find(id);
-                myEntities.TB_M_Supplier.Remove(supplier);
-                myEntities.SaveChanges();
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
+        
         // POST: Suppliers/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        public JsonResult Delete(int id)
         {
-            try
-            {
-                var supplier = myEntities.TB_M_Supplier.Find(id);
-                myEntities.TB_M_Supplier.Remove(supplier);
-                myEntities.SaveChanges();
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            var client = new HttpClient();
+            var result = client.DeleteAsync("http://localhost:2414/API/Suppliers/" + id).Result;
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         public async Task<JsonResult> supplierJsonList()
@@ -144,5 +100,27 @@ namespace WebAppBootcamp32.Controllers
             //});
             return Json("Error", JsonRequestBehavior.AllowGet);
         }
+        
+        public JsonResult GetById(int id)
+        {
+            TB_M_Supplier supplier = null;
+            var client = new HttpClient();
+            var responseTask = client.GetAsync("http://localhost:2414/API/Suppliers/" + id);
+            responseTask.Wait();
+            var result = responseTask.Result;
+            if (result.IsSuccessStatusCode)
+            {
+                var readTask = result.Content.ReadAsAsync<TB_M_Supplier>();
+                readTask.Wait();
+                supplier = readTask.Result;
+            }
+            else
+            {
+                // try to find something
+            }
+
+            return Json(supplier, JsonRequestBehavior.AllowGet);
+        }
+
     }
 }

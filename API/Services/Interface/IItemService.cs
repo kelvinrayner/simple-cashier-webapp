@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace API.Services.Interface
 {
-    public interface ISupplierService
+    public interface IItemService
     {
-        IEnumerable<Supplier> Get();
-        Supplier Get(int id);
-        int Create(SupplierVM supplierVM);
-        int Update(int id, SupplierVM supplierVM);
+        IEnumerable<Item> Get();
+        Item Get(int id);
+        int Create(ItemVM itemVM);
+        int Update(int id, ItemVM itemVM);
         int Delete(int id);
     }
 }

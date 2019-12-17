@@ -10,6 +10,7 @@ namespace WebAppBootcamp32.ViewModel
     {
         public IEnumerable<TB_M_Supplier> SuppliersList { get; set; }
         public TB_M_Supplier Suppliers { get; set; }
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public DateTimeOffset CreateDate { get; set; }
