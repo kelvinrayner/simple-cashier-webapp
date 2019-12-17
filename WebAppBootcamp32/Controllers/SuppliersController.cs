@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Data.Models;
+using Data.ViewModel;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +10,6 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using WebAppBootcamp32.Models;
-using WebAppBootcamp32.ViewModel;
 
 namespace WebAppBootcamp32.Controllers
 {
@@ -38,10 +39,10 @@ namespace WebAppBootcamp32.Controllers
 
         // POST: Suppliers/Create
         [HttpPost]
-        public JsonResult Create(AddSupplierVM addSupplierVM)
+        public JsonResult Create(SupplierVM supplierVM)
         {
             var client = new HttpClient();
-            var myContent = JsonConvert.SerializeObject(addSupplierVM);
+            var myContent = JsonConvert.SerializeObject(supplierVM);
             var buffer = System.Text.Encoding.UTF8.GetBytes(myContent);
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -49,23 +50,23 @@ namespace WebAppBootcamp32.Controllers
             return Json(result);
         }
 
-        // GET: Suppliers/Edit/5
-        public ActionResult Edit(int id, AddSupplierVM addSupplierVM)
-        {
-            var model = new AddSupplierVM();
-            model.Suppliers = myEntities.TB_M_Supplier.Find(id);
-            return View(model.Suppliers);
-        }
+        //// GET: Suppliers/Edit/5
+        //public ActionResult Edit(int id, SupplierVM supplierVM)
+        //{
+        //    var model = new SupplierVM();
+        //    model.Suppliers = myEntities.TB_M_Supplier.Find(id);
+        //    return View(model.Suppliers);
+        //}
 
         // POST: Suppliers/Edit/5
-        public JsonResult UpdateSupplier(AddSupplierVM addSupplierVM)
+        public JsonResult UpdateSupplier(SupplierVM supplierVM)
         {
             var client = new HttpClient();
-            var myContent = JsonConvert.SerializeObject(addSupplierVM);
+            var myContent = JsonConvert.SerializeObject(supplierVM);
             var buffer = System.Text.Encoding.UTF8.GetBytes(myContent);
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var result = client.PutAsync("http://localhost:2414/API/Suppliers/" + addSupplierVM.Id, byteContent).Result;
+            var result = client.PutAsync("http://localhost:2414/API/Suppliers/" + supplierVM.Id, byteContent).Result;
             return Json(result, JsonRequestBehavior.AllowGet);
         }
         

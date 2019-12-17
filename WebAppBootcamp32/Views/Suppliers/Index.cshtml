@@ -8,9 +8,8 @@
 
 <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 <link href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.bootstrap.min.css" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.9/sweetalert2.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.9/sweetalert2.min.js"></script>
 
+<script src="~/Scripts/sweetalert2@9.js"></script>
 <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap4.min.js "></script>
 
@@ -24,7 +23,7 @@
 <h2>Suppliers</h2>
 
 <p>
-    <button id="addItem" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Add Item</button>
+    <button id="addItem" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Add Supplier</button>
 </p>
 
 <div id="myModal" class="modal fade" role="dialog">
@@ -51,7 +50,7 @@
                         @*@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })*@
                         <label name="nameCreate">Name :</label>
-                        <input type="text" id="name" class="form-control" />
+                        <input type="email" id="name" class="form-control" />
                     </div>
                 </div>
                 <div class="form-group">
@@ -142,10 +141,12 @@
         loadData();
         $("#addItem").click(function () {
             $("#myModal").modal('hide');
+            $('#Update').hide();
         });
 
         $("#closeItem").click(function () {
             $("#myModal").modal('hide');
+            $('#Update').hide();
         });
 
         $("#editItem").click(function () {
@@ -186,15 +187,14 @@
 
 
     function save() {
-        $('#Update').hide();
         if ($('#name').val() == 0) {
-            window.alert("Nama harus diisi!");
+            Swal.fire('Please fill Name');
         } else if (!ValidateName($('#name').val())) {
-            window.alert("Please Fill Corectly");
+            Swal.fire('Please fill Name correctly');
         } else if ($('#email').val() == 0) {
-            window.alert("Email harus diisi");
+            Swal.fire('Please fill Email');
         } else if (!ValidateName($('#name').val())) {
-            window.alert("Please Fill Corectly");
+            Swal.fire('Please fill Email correctly');
         } else {
             var role = new Object();
             role.Name = $('#name').val();
@@ -207,11 +207,22 @@
             }).then((result) => {
                 debugger;
                 if (result.StatusCode == 200) {
-                    window.alert("success");
-                    window.location.href = "/Suppliers/";
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Supplier has been saved',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    loadData();
+                    ClearScreen();
+                    $('#myModal').modal('hide');
                 }
                 else {
-                    window.alert("failed");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Something went wrong!'
+                    });
                     ClearScreen();
                 }
             });
@@ -265,13 +276,13 @@
     function update() {
         debugger;
         if ($('#name').val() == 0) {
-            window.alert("Nama harus diisi!");
+            Swal.fire('Please fill Name');
         } else if (!ValidateName($('#name').val())) {
-            window.alert("Please Fill Corectly");
+            Swal.fire('Please fill Name correctly');
         } else if ($('#email').val() == 0) {
-            window.alert("Email harus diisi");
-        } else if (!ValidateName($('#name').val())){
-            window.alert("Please Fill Corectly");
+            Swal.fire('Please fill Email');
+        } else if (!ValidateName($('#name').val())) {
+            Swal.fire('Please fill Email correctly');
         } else {
             var data = new Object();
             data.Id = $('#idSupplier').val();
@@ -284,11 +295,22 @@
             }).then((result) => {
                 debugger;
                 if (result.StatusCode == 200) {
-                    window.alert("Success");
-                    window.location.href = "/Suppliers/";
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Supplier has been saved',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    loadData();
+                    ClearScreen();
+                    $('#myModal').modal('hide');
                 }
                 else {
-                    window.alert("Failed");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Something went wrong!'
+                    });
                     ClearScreen();
                 }
             });
@@ -296,27 +318,41 @@
     }
 
     function Delete(Id) {
-        var hasil = window.confirm("Are you sure to delete?");
-        if (hasil == true) {
-            $.ajax({
-                type: "GET",
-                url: "/Suppliers/Delete/",
-                data: { id: Id }
-            }).then((result) => {
-                debugger;
-                if (result.StatusCode == 200) {
-                    window.alert("Success");
-                    window.location.href = "/Suppliers/";
-                }
-                else {
-                    window.alert("Failed");
-                    ClearScreen();
-                }
-            });
-        } else {
-            window.alert("Failed");
-            ClearScreen();
-        }
-            
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    type: "GET",
+                    url: "/Suppliers/Delete/",
+                    data: { id: Id }
+                }).then((result) => {
+                    debugger;
+                    if (result.StatusCode == 200) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Supplier has been deleted',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        loadData();
+                        ClearScreen();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Something went wrong!',
+                        })
+                        ClearScreen();
+                    }
+                });
+            }
+        })  
     }
 </script>

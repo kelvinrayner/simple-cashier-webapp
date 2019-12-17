@@ -20,8 +20,8 @@ namespace Data.Repository
             if (item != null)
             {
                 var push = new Item(itemVM);
-                int supID = Convert.ToInt32(itemVM.Supplier);
-                push.Supplier = myContext.Suppliers.Where(s => s.Id == supID).FirstOrDefault();
+                var supplier = myContext.Suppliers.Find(itemVM.Supplier.Id);
+                push.Supplier = supplier;
                 myContext.Items.Add(push);
                 myContext.SaveChanges();
             }
