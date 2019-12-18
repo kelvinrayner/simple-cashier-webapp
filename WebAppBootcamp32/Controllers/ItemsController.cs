@@ -1,4 +1,5 @@
-﻿using Data.Models;
+﻿using Data.Model;
+using Data.Models;
 using Data.ViewModel;
 using Newtonsoft.Json;
 using System;
@@ -20,8 +21,7 @@ namespace WebAppBootcamp32.Controllers
         // GET: Items
         public ActionResult Index()
         {
-            var itemsList = myEntities.TB_M_Item.ToList();
-            return View(itemsList);
+            return View(itemJsonList());
         }
 
         // GET: Items/Details/5
@@ -54,29 +54,29 @@ namespace WebAppBootcamp32.Controllers
 
 
         // GET: Items/Edit/5
-        public ActionResult Edit(int id)
-        {
-            var items = myEntities.TB_M_Item.Find(id);
-            ViewBag.Supplier = myEntities.TB_M_Supplier.Select(s => new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = s.Id == id });
-            return View(items);
-        }
+        //public ActionResult Edit(int id)
+        //{
+        //    var items = myEntities.TB_M_Item.Find(id);
+        //    ViewBag.Supplier = myEntities.TB_M_Supplier.Select(s => new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = s.Id == id });
+        //    return View(items);
+        //}
 
-        // GET: Items/Delete/5
-        public ActionResult Delete(int id)
-        {
-            try
-            {
-                var items = myEntities.TB_M_Item.Find(id);
-                myEntities.TB_M_Item.Remove(items);
-                myEntities.SaveChanges();
+        //// GET: Items/Delete/5
+        //public ActionResult Delete(int id)
+        //{
+        //    try
+        //    {
+        //        var items = myEntities.TB_M_Item.Find(id);
+        //        myEntities.TB_M_Item.Remove(items);
+        //        myEntities.SaveChanges();
 
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        //        return RedirectToAction("Index");
+        //    }
+        //    catch
+        //    {
+        //        return View();
+        //    }
+        //}
 
         //// POST: Items/Create
         //[HttpPost]
@@ -103,41 +103,38 @@ namespace WebAppBootcamp32.Controllers
         //}
 
         // POST: Items/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, ItemVM itemVM)
-        {
-            try
-            {
-                var items = myEntities.TB_M_Item.Find(id);
-                items.Name = itemVM.Name;
-                items.Stock = itemVM.Stock;
-                items.Price = itemVM.Price;
-                var supplierId = myEntities.TB_M_Supplier.Find(itemVM.Supplier);
-                items.TB_M_Supplier = supplierId;
+        //[HttpPost]
+        //public ActionResult Edit(int id, ItemVM itemVM)
+        //{
+        //    try
+        //    {
+        //        var items = myEntities.TB_M_Item.Find(id);
+        //        items.Name = itemVM.Name;
+        //        items.Stock = itemVM.Stock;
+        //        items.Price = itemVM.Price;
+        //        var supplierId = myEntities.TB_M_Supplier.Find(itemVM.Supplier);
+        //        items.TB_M_Supplier = supplierId;
 
-                myEntities.SaveChanges();
+        //        myEntities.SaveChanges();
 
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        //        return RedirectToAction("Index");
+        //    }
+        //    catch
+        //    {
+        //        return View();
+        //    }
+        //}
 
         public async Task<JsonResult> itemJsonList()
         {
             string url = "http://localhost:2414/API/Items";
             var client = new HttpClient();
-            HttpResponseMessage responseMessage = await client.GetAsync(url).ConfigureAwait(false);
+            //HttpResponseMessage responseMessage = await client.GetAsync(url).ConfigureAwait(false);            
+            var responseMessage = client.GetAsync(url).Result;
             if (responseMessage.IsSuccessStatusCode)
             {
-                var data = await responseMessage.Content.ReadAsAsync<IEnumerable<ItemVM>>();
-                var json = JsonConvert.SerializeObject(data, Formatting.None, new JsonSerializerSettings()
-                {
-                    ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-                });
-                return Json(json, JsonRequestBehavior.AllowGet);
+                var data = await responseMessage.Content.ReadAsAsync<IEnumerable<Item>>();
+                return Json(data, JsonRequestBehavior.AllowGet);
             }
             return Json("Error", JsonRequestBehavior.AllowGet);
         }
@@ -180,25 +177,43 @@ namespace WebAppBootcamp32.Controllers
             return View();
         }
 
-        public JsonResult LoadSupplier()
+        public JsonResult Delete(int id)
         {
-            IEnumerable<TB_M_Supplier> suppliers = null;
             var client = new HttpClient();
-            var responseTask = client.GetAsync("http://localhost:2414/API/Suppliers/");
+            var result = client.DeleteAsync("http://localhost:2414/API/Items/" + id).Result;
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetById(int id)
+        {
+            Item item = null;
+            var client = new HttpClient();
+            var responseTask = client.GetAsync("http://localhost:2414/API/Items/" + id);
             responseTask.Wait();
             var result = responseTask.Result;
             if (result.IsSuccessStatusCode)
             {
-                var readTask = result.Content.ReadAsAsync<IList<TB_M_Supplier>>();
+                var readTask = result.Content.ReadAsAsync<Item>();
                 readTask.Wait();
-                suppliers = readTask.Result;
+                item = readTask.Result;
             }
             else
             {
-                suppliers = Enumerable.Empty<TB_M_Supplier>();
-                ModelState.AddModelError(string.Empty, "Server error try after some time.");
+                // try to find something
             }
-            return Json(suppliers, JsonRequestBehavior.AllowGet);
+
+            return Json(item, JsonRequestBehavior.AllowGet);
+        }
+        
+        public JsonResult UpdateItem(ItemVM itemVM)
+        {
+            var client = new HttpClient();
+            var myContent = JsonConvert.SerializeObject(itemVM);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(myContent);
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var result = client.PutAsync("http://localhost:2414/API/Items/" + itemVM.Id, byteContent).Result;
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
     }
 }

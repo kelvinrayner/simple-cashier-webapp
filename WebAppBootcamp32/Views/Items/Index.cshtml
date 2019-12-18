@@ -3,15 +3,6 @@
     ViewBag.Title = "Items";
 }
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-
-<link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet" />
-<link href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.bootstrap.min.css" rel="stylesheet" />
-
-<script src="~/Scripts/sweetalert2@9.js"></script>
-<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap4.min.js "></script>
-
 <style type="text/css">
     table.dataTable thead tr {
         background-color: lightseagreen;
@@ -35,7 +26,7 @@
             <div class="modal-body" style="height: 300px;">
                 <div class="form-group">
                     <div class="col-md-10">
-                        <input type="hidden" id="idSupplier" class="form-control" />
+                        <input type="hidden" id="idItem" class="form-control" />
                     </div>
                 </div>
                 <div class="form-group">
@@ -127,145 +118,12 @@
     </tbody>
 </table>
 
-<script>
-    $(document).ready(function () {
-        loadData();
-        $("#addItem").click(function () {
-            $("#myModal").modal('hide');
-            $('#Update').hide();
-        });
+@section scripts {
+    @*<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>*@
+    <script src="~/Scripts/datatables/media/js/jquery.dataTables.min.js"></script>
+    <link href="~/Scripts/datatables/media/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <script src="~/Scripts/sweetalert2@9.js"></script>
+    <script src="~/Scripts/ItemScript/ItemRetrieve.js"></script>
+}
 
-        $("#closeItem").click(function () {
-            $("#myModal").modal('hide');
-            $('#Update').hide();
-        });
-        
-        $("#supplier").change(function () {
-            var get = $('#supplier').val();
-            $.ajax({
-                type: "GET",
-                url: "/Items/LoadSupplier/",
-                data: { 'param': get }
-            })
-        })
-    });
-
-    function ValidateName(name) {
-        var nameReg = /^[A-Z][a-z 0-9]+$/i;
-        return nameReg.test(name);
-    }
-
-    function ClearScreen() {
-        $('#name').val('');
-        $('#email').val('');
-        $('#Update').hide();
-        $('#Save').show();
-    }
-
-    $('#demoGrid').dataTable({
-        "aoColumns": [null, null, null, null, null, { "bSortable": false }]
-    });
-
-    function loadData() {
-        $.ajax({
-            url: "/Items/itemJsonList",
-            type: "GET",
-            contentType: "application/json;charset=utf-8",
-            dataType: "json",
-            success: function (result) {
-                var html = '';
-                const obj = JSON.parse(result);
-                $.each(obj, function (key, item) {
-                    html += '<tr>';
-                    html += '<td>' + key++ + '</td>';
-                    html += '<td>' + item.Name + '</td>';
-                    html += '<td>' + item.Stock + '</td>';
-                    html += '<td>' + item.Price + '</td>';
-                    html += '<td>' + item.Supplier['Name'] + '</td>';
-                    html += '<td><a href="#" onclick="return GetById(' + item.Id + ')">Edit</a> | <a href="#" onclick="return Delete(' + item.Id + ')">Delete</a></td>';
-                    html += '</tr>';
-                });
-                $('.tbody').html(html);
-            },
-            error: function (errormessage) {
-                console.log(errormessage.responseText);
-            }
-        });
-    }
-
-    var Suppliers = []
-    function LoadSupplier(element) {
-        if (Suppliers.length == 0) {
-            $.ajax({
-                type: "GET",
-                url: "/Items/LoadSupplier/",
-                success: function (data) {
-                    Suppliers = data;
-                    renderSupplier(element);
-                }
-            })
-        }
-        else {
-            renderSupplier(element);
-        }
-    }
-
-    function renderSupplier(element) {
-        var $ele = $(element);
-        $ele.empty();
-        $ele.append($('<option/>').val('0').text('Pilih Supplier'));
-        $.each(Suppliers, function (i, val) {
-            $ele.append($('<option/>').val(val.Id).text(val.Name));
-        })
-    }
-    LoadSupplier($('#supplier'));
-
-    function save() {
-        debugger;
-        if ($('#name').val() == 0) {
-            Swal.fire('Please fill Name');
-        } else if (!ValidateName($('#name').val())) {
-            Swal.fire('Please fill Name correctly');
-        } else if ($('#stock').val() == 0) {
-            Swal.fire('Please fill Stock');
-        } else if ($('#price').val() == 0) {
-            Swal.fire('Please fill Price');
-        } else {
-            var supplierObj = new Object({
-                'Name' : $('#name').val(),
-                'Stock' : $('#stock').val(),
-                'Price' : $('#price').val(),
-                'Supplier.Id' : $('#supplier').val()
-            });
-            $.ajax({
-                type: "POST",
-                url: "/Items/Create",
-                dataType: 'json',
-                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
-                data: { itemVM: supplierObj }
-            }).then((result) => {
-                debugger;
-                if (result >= 1) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Item has been saved',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                    loadData();
-                    ClearScreen();
-                    $('#myModal').modal('hide');
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Something went wrong!'
-                    });
-                    ClearScreen();
-                }
-            });
-
-        }
-    }
-</script>
 

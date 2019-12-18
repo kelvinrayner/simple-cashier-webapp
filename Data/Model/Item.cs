@@ -25,7 +25,6 @@ namespace Data.Model
             this.Name = itemVM.Name;
             this.Stock = itemVM.Stock;
             this.Price = itemVM.Price;
-            this.Supplier = itemVM.Supplier;
             this.CreateDate = DateTimeOffset.Now;
             this.IsDeleted = false;
         }
@@ -35,7 +34,6 @@ namespace Data.Model
             this.Name = itemVM.Name;
             this.Stock = itemVM.Stock;
             this.Price = itemVM.Price;
-            this.Supplier = itemVM.Supplier;
             this.UpdateDate = DateTimeOffset.Now;
         }
 

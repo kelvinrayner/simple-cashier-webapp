@@ -78,28 +78,25 @@ namespace WebAppBootcamp32.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public async Task<JsonResult> supplierJsonList()
+        public JsonResult supplierJsonList()
         {
-            string url = "http://localhost:2414/API/Suppliers";
+            IEnumerable<TB_M_Supplier> suppliers = null;
             var client = new HttpClient();
-            HttpResponseMessage responseMessage = await client.GetAsync(url).ConfigureAwait(false);
-            if (responseMessage.IsSuccessStatusCode)
+            var responseTask = client.GetAsync("http://localhost:2414/API/Suppliers/");
+            responseTask.Wait();
+            var result = responseTask.Result;
+            if (result.IsSuccessStatusCode)
             {
-                var data = await responseMessage.Content.ReadAsAsync<List<TB_M_Supplier>>();
-                var json = JsonConvert.SerializeObject(data, Formatting.None, new JsonSerializerSettings()
-                {
-                    ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-                });
-                return Json(json, JsonRequestBehavior.AllowGet);
+                var readTask = result.Content.ReadAsAsync<IList<TB_M_Supplier>>();
+                readTask.Wait();
+                suppliers = readTask.Result;
             }
-            //var get = from s in myEntities.TB_M_Supplier
-            //          select new { s.Name, s.Email, s.CreateDate };
-            //var json = JsonConvert.SerializeObject(get, new JsonSerializerSettings
-            //{
-            //    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-            //    Formatting = Formatting.Indented
-            //});
-            return Json("Error", JsonRequestBehavior.AllowGet);
+            else
+            {
+                suppliers = Enumerable.Empty<TB_M_Supplier>();
+                ModelState.AddModelError(string.Empty, "Server error try after some time.");
+            }
+            return Json(suppliers, JsonRequestBehavior.AllowGet);
         }
         
         public JsonResult GetById(int id)

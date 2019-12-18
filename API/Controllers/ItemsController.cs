@@ -61,9 +61,9 @@ namespace API.Controllers
             var updated = _itemService.Update(id, itemVM);
             if (updated > 0)
             {
-                new HttpResponseMessage(HttpStatusCode.BadRequest);
+                return Request.CreateResponse(HttpStatusCode.OK, updated);
             }
-            return Request.CreateResponse(HttpStatusCode.OK, updated);
+            return new HttpResponseMessage(HttpStatusCode.BadRequest);
         }
 
         [HttpDelete]
